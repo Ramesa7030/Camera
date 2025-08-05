@@ -6,429 +6,120 @@
   <title>Asset Capture PWA</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --primary:#4361ee;--secondary:#3f37c9;--success:#4cc9f0;
+      --warning:#f72585;--error:#f44336;--dark:#1d3557;--light:#f8f9fa;
     }
-    
-    :root {
-      --primary: #4361ee;
-      --secondary: #3f37c9;
-      --success: #4cc9f0;
-      --warning: #f72585;
-      --error: #f44336;
-      --dark: #1d3557;
-      --light: #f8f9fa;
+    body{
+      margin:0;
+      font-family:'Segoe UI',system-ui,sans-serif;
+      background:linear-gradient(135deg,#1a2a6c,#b21f1f,#1a2a6c);
+      color:var(--light);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;            /* allow full height */
+      overflow-y:auto;             /* enable scroll   */
     }
-    
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
-      color: var(--light);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
+    .app-header{
+      background:rgba(29,53,87,.85);
+      padding:1rem;
+      text-align:center;
+      box-shadow:0 4px 12px rgba(0,0,0,.15);
+      z-index:10;
     }
-    
-    .app-header {
-      background: rgba(29, 53, 87, 0.85);
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      z-index: 10;
-      position: relative;
-    }
-    
-    .app-title {
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      margin: 0;
-      background: linear-gradient(to right, #4cc9f0, #f72585);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    .app-container {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      overflow: hidden;
-      padding: 1rem;
-      max-width: 1000px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    
-    #cameraContainer {
-      flex: 1;
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      margin-bottom: 1.5rem;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    #view {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    
-    .camera-placeholder {
-      text-align: center;
-      padding: 2rem;
-    }
-    
-    .camera-placeholder i {
-      font-size: 4rem;
-      color: #4cc9f0;
-      margin-bottom: 1rem;
-    }
-    
-    .camera-placeholder h3 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      color: #f8f9fa;
-    }
-    
-    .camera-placeholder p {
-      margin-bottom: 1.5rem;
-      font-size: 1.1rem;
-      max-width: 500px;
-      line-height: 1.6;
-    }
-    
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .btn {
-      padding: 0.9rem 1.8rem;
-      border-radius: 50px;
-      border: none;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-    
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-    
-    .btn-primary:hover:not(:disabled) {
-      background: var(--secondary);
-      transform: translateY(-2px);
-    }
-    
-    .btn-success {
-      background: var(--success);
-      color: var(--dark);
-    }
-    
-    .btn-success:hover:not(:disabled) {
-      background: #48bfe3;
-      transform: translateY(-2px);
-    }
-    
-    .btn-warning {
-      background: var(--warning);
-      color: white;
-    }
-    
-    .btn-warning:hover:not(:disabled) {
-      background: #e71d73;
-      transform: translateY(-2px);
-    }
-    
-    .btn-error {
-      background: var(--error);
-      color: white;
-    }
-    
-    .btn-error:hover:not(:disabled) {
-      background: #e53935;
-      transform: translateY(-2px);
-    }
-    
-    #snap {
-      position: absolute;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      color: #333;
-      border: none;
-      border-radius: 50%;
-      width: 70px;
-      height: 70px;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-      z-index: 5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      transition: all 0.2s ease;
-    }
-    
-    #snap:hover {
-      transform: translateX(-50%) scale(1.05);
-      background: #f8f9fa;
-    }
-    
-    #snap:active {
-      transform: translateX(-50%) scale(0.95);
-    }
-    
-    #formArea {
-      background: rgba(29, 53, 87, 0.85);
-      padding: 1.5rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      display: none;
-      backdrop-filter: blur(10px);
-      margin-top: 1rem;
-    }
-    
-    .form-title {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      font-size: 1.4rem;
-      color: #4cc9f0;
-    }
-    
-    .form-group {
-      margin-bottom: 1.2rem;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      font-size: 1rem;
-    }
-    
-    input, textarea {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      border-radius: 12px;
-      border: 2px solid rgba(76, 201, 240, 0.3);
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-    
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #4cc9f0;
-    }
-    
-    input::placeholder, textarea::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-    
-    #save {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-    
-    #msg {
-      text-align: center;
-      margin-top: 1rem;
-      font-weight: 600;
-      min-height: 1.5rem;
-      color: #4cc9f0;
-    }
-    
-    .export-buttons {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      display: flex;
-      gap: 0.8rem;
-    }
-    
-    .status-bar {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.8rem 1.5rem;
-      background: rgba(29, 53, 87, 0.7);
-      border-radius: 50px;
-      margin-top: 1.5rem;
-      font-size: 0.9rem;
-    }
-    
-    .gps-status, .db-status, .camera-status {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .gps-status i, .db-status i, .camera-status i {
-      font-size: 1.2rem;
-    }
-    
-    .gps-active {
-      color: #4ade80;
-    }
-    
-    .gps-inactive {
-      color: #f87171;
-    }
-    
-    .db-active {
-      color: #60a5fa;
-    }
-    
-    .camera-active {
-      color: #4ade80;
-    }
-    
-    .camera-inactive {
-      color: #f87171;
-    }
-    
-    .progress-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-      display: none;
-    }
-    
-    .progress-text {
-      color: white;
-      font-size: 1.5rem;
-      margin-top: 1rem;
-    }
-    
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: #4cc9f0;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    .counter {
-      font-size: 1.2rem;
-      margin-top: 1rem;
-      color: white;
-    }
-    
-    .instructions {
-      background: rgba(29, 53, 87, 0.7);
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-    
-    .instructions h3 {
-      color: #4cc9f0;
-      margin-bottom: 0.8rem;
-    }
-    
-    .instructions ul {
-      padding-left: 1.5rem;
-    }
-    
-    .instructions li {
-      margin-bottom: 0.5rem;
-    }
-    
-    .permission-help {
-      background: rgba(244, 67, 54, 0.2);
-      border-left: 4px solid var(--error);
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 0 8px 8px 0;
-    }
-    
-    .permission-help h4 {
-      color: #ff8a80;
-      margin-bottom: 0.5rem;
-    }
-    
-    @media (max-width: 768px) {
-      .app-container {
-        padding: 0.8rem;
-      }
-      
-      .controls {
-        flex-direction: column;
-        gap: 0.8rem;
-      }
-      
-      .btn {
-        width: 100%;
-        justify-content: center;
-      }
-      
-      .export-buttons {
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-      
-      .status-bar {
-        flex-direction: column;
-        gap: 0.8rem;
-        align-items: flex-start;
-      }
+    .app-title{
+      font-size:1.8rem;
+      font-weight:700;
+      letter-spacing:1px;
+      margin:0;
+      background:linear-gradient(to right,#4cc9f0,#f72585);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
     }
 
-    /* --- fix for hidden / collapsed camera feed --- */
-    #cameraContainer {
-      min-height: 250px;      /* never collapse */
-      aspect-ratio: 4 / 3;    /* keeps 4:3 shape */
+    /* scrollable container instead of hidden */
+    .app-container{
+      display:flex;
+      flex-direction:column;
+      flex:1;
+      overflow-y:auto;         /* allow inner scroll   */
+      padding:1rem;
+      max-width:1000px;
+      margin:0 auto;
+      width:100%;
     }
 
-    #view {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;      /* fill the container */
-      display: block;         /* remove inline gaps */
+    #cameraContainer{
+      flex:none;               /* keep size            */
+      position:relative;
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 8px 32px rgba(0,0,0,.3);
+      margin-bottom:1.5rem;
+      background:#000;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:250px;
+      aspect-ratio:4/3;
+    }
+    #view{width:100%;height:100%;object-fit:cover;display:block}
+    .camera-placeholder{text-align:center;padding:2rem}
+
+    /* ---------- rest of original styles unchanged ---------- */
+    .camera-placeholder i{font-size:4rem;color:#4cc9f0;margin-bottom:1rem}
+    .camera-placeholder h3{font-size:1.8rem;margin-bottom:1rem;color:#f8f9fa}
+    .camera-placeholder p{margin-bottom:1.5rem;font-size:1.1rem;max-width:500px;line-height:1.6}
+    .controls{display:flex;justify-content:center;gap:1.5rem;margin-top:1rem;flex-wrap:wrap}
+    .btn{padding:.9rem 1.8rem;border-radius:50px;border:none;font-weight:600;font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover:not(:disabled){background:var(--secondary);transform:translateY(-2px)}
+    .btn-success{background:var(--success);color:var(--dark)}
+    .btn-success:hover:not(:disabled){background:#48bfe3;transform:translateY(-2px)}
+    .btn-warning{background:var(--warning);color:#fff}
+    .btn-warning:hover:not(:disabled){background:#e71d73;transform:translateY(-2px)}
+    .btn-error{background:var(--error);color:#fff}
+    .btn-error:hover:not(:disabled){background:#e53935;transform:translateY(-2px)}
+    #snap{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#fff;color:#333;border:none;border-radius:50%;width:70px;height:70px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:5;display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:all .2s ease}
+    #snap:hover{transform:translateX(-50%) scale(1.05);background:#f8f9fa}
+    #snap:active{transform:translateX(-50%) scale(.95)}
+    #formArea{background:rgba(29,53,87,.85);padding:1.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.3);display:none;backdrop-filter:blur(10px);margin-top:1rem}
+    .form-title{text-align:center;margin-bottom:1.5rem;font-size:1.4rem;color:#4cc9f0}
+    .form-group{margin-bottom:1.2rem}
+    label{display:block;margin-bottom:.5rem;font-weight:500;font-size:1rem}
+    input,textarea{width:100%;padding:.8rem 1rem;border-radius:12px;border:2px solid rgba(76,201,240,.3);background:rgba(255,255,255,.1);color:#fff;font-size:1rem;transition:border-color .3s}
+    input:focus,textarea:focus{outline:none;border-color:#4cc9f0}
+    input::placeholder,textarea::placeholder{color:rgba(255,255,255,.5)}
+    #save{width:100%;padding:1rem;font-size:1.1rem;font-weight:600}
+    #msg{text-align:center;margin-top:1rem;font-weight:600;min-height:1.5rem;color:#4cc9f0}
+    .export-buttons{position:absolute;top:1rem;right:1rem;display:flex;gap:.8rem}
+    .status-bar{display:flex;justify-content:space-between;padding:.8rem 1.5rem;background:rgba(29,53,87,.7);border-radius:50px;margin-top:1.5rem;font-size:.9rem}
+    .gps-status,.db-status,.camera-status{display:flex;align-items:center;gap:.5rem}
+    .gps-status i,.db-status i,.camera-status i{font-size:1.2rem}
+    .gps-active{color:#4ade80}
+    .gps-inactive{color:#f87171}
+    .db-active{color:#60a5fa}
+    .camera-active{color:#4ade80}
+    .camera-inactive{color:#f87171}
+    .progress-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:100;display:none}
+    .progress-text{color:#fff;font-size:1.5rem;margin-top:1rem}
+    .spinner{width:50px;height:50px;border:5px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#4cc9f0;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .counter{font-size:1.2rem;margin-top:1rem;color:#fff}
+    .instructions{background:rgba(29,53,87,.7);border-radius:16px;padding:1.5rem;margin-top:1.5rem;font-size:.95rem;line-height:1.6}
+    .instructions h3{color:#4cc9f0;margin-bottom:.8rem}
+    .instructions ul{padding-left:1.5rem}
+    .instructions li{margin-bottom:.5rem}
+    .permission-help{background:rgba(244,67,54,.2);border-left:4px solid var(--error);padding:1rem;margin:1rem 0;border-radius:0 8px 8px 0}
+    .permission-help h4{color:#ff8a80;margin-bottom:.5rem}
+    @media (max-width:768px){
+      .app-container{padding:.8rem}
+      .controls{flex-direction:column;gap:.8rem}
+      .btn{width:100%;justify-content:center}
+      .export-buttons{top:.5rem;right:.5rem}
+      .status-bar{flex-direction:column;gap:.8rem;align-items:flex-start}
     }
   </style>
 </head>
@@ -436,44 +127,39 @@
   <div class="app-header">
     <h1 class="app-title"><i class="fas fa-camera"></i> Asset Capture PWA</h1>
   </div>
-  
+
   <div class="app-container">
     <div id="cameraContainer">
       <video id="view" autoplay playsinline></video>
       <button id="snap"><i class="fas fa-camera"></i></button>
-      
+
       <div class="export-buttons">
         <button id="exportCSV" class="btn btn-success"><i class="fas fa-file-csv"></i> CSV</button>
         <button id="exportImages" class="btn btn-warning"><i class="fas fa-file-image"></i> Images</button>
       </div>
-      
-      <!-- Camera placeholder for when access is denied -->
+
       <div id="cameraPlaceholder" class="camera-placeholder" style="display: none;">
         <i class="fas fa-video-slash"></i>
         <h3>Camera Access Required</h3>
         <p>To use this app, please allow camera access in your browser. The camera is required to capture asset photos.</p>
-        
         <div class="permission-help">
           <h4>How to enable camera access:</h4>
           <ul>
             <li>Look for the camera permission prompt in your browser</li>
             <li>Check your browser's address bar for a camera icon</li>
-            <li>Go to browser settings > Privacy > Camera permissions</li>
+            <li>Go to browser settings → Privacy → Camera permissions</li>
             <li>Refresh the page after granting permissions</li>
           </ul>
         </div>
-        
         <button id="retryCamera" class="btn btn-error"><i class="fas fa-redo"></i> Retry Camera Access</button>
       </div>
     </div>
-    
-    <!-- Camera controls -->
+
     <div class="controls">
       <button id="switchCamera" class="btn btn-primary"><i class="fas fa-sync-alt"></i> Switch Camera</button>
       <button id="toggleFlash" class="btn btn-primary"><i class="fas fa-bolt"></i> Flash: Off</button>
     </div>
-    
-    <!-- Status bar -->
+
     <div class="status-bar">
       <div class="camera-status">
         <i id="cameraIcon" class="fas fa-video camera-inactive"></i>
@@ -488,8 +174,7 @@
         <span>AssetDB: <span id="recordCount">0</span> records</span>
       </div>
     </div>
-    
-    <!-- Mini form -->
+
     <div id="formArea">
       <h3 class="form-title">Asset Details</h3>
       <div class="form-group">
@@ -507,8 +192,7 @@
       <button id="save" class="btn btn-success"><i class="fas fa-save"></i> Save & Reset</button>
       <div id="msg"></div>
     </div>
-    
-    <!-- Instructions -->
+
     <div class="instructions">
       <h3><i class="fas fa-info-circle"></i> How to Use</h3>
       <ul>
@@ -520,20 +204,19 @@
       </ul>
     </div>
   </div>
-  
-  <!-- Progress overlay -->
+
   <div class="progress-overlay" id="progressOverlay">
     <div class="spinner"></div>
     <div class="progress-text" id="progressText">Exporting Images...</div>
     <div class="counter" id="progressCounter">0/0</div>
   </div>
-  
+
   <script>
     /* ---------- IndexedDB ---------- */
     const dbName = 'AssetDB';
     const storeName = 'assets';
     let db;
-    
+
     const openDB = () => new Promise(resolve => {
       const req = indexedDB.open(dbName, 1);
       req.onupgradeneeded = () => {
@@ -548,26 +231,19 @@
         updateRecordCount();
         resolve();
       };
-      req.onerror = (e) => {
-        console.error('Database error:', e.target.error);
-      };
+      req.onerror = e => console.error('Database error:', e.target.error);
     });
-    
-    // Initialize database
     openDB();
-    
-    // Update record count display
+
     async function updateRecordCount() {
       if (!db) return;
-      
       const tx = db.transaction([storeName], 'readonly');
       const store = tx.objectStore(storeName);
       const count = await store.count();
-      
       document.getElementById('recordCount').textContent = count.result;
     }
-    
-    /* ---------- Camera Setup ---------- */
+
+    /* ---------- Camera ---------- */
     const view = document.getElementById('view');
     const snapBtn = document.getElementById('snap');
     const formArea = document.getElementById('formArea');
@@ -577,117 +253,55 @@
     const retryCameraBtn = document.getElementById('retryCamera');
     const cameraIcon = document.getElementById('cameraIcon');
     const cameraStatus = document.getElementById('cameraStatus');
-    
+
     let currentStream = null;
-    let currentFacingMode = 'environment'; // Start with rear camera
+    let currentFacingMode = 'environment';
     let flashOn = false;
-    
-    // Function to update camera status
+
     function updateCameraStatus(status, isActive) {
       cameraStatus.textContent = `Camera: ${status}`;
-      cameraIcon.className = isActive ? 
-        'fas fa-video camera-active' : 
-        'fas fa-video-slash camera-inactive';
+      cameraIcon.className = isActive ? 'fas fa-video camera-active' : 'fas fa-video-slash camera-inactive';
     }
-    
-    // Function to show camera placeholder
     function showCameraPlaceholder() {
       view.style.display = 'none';
       snapBtn.style.display = 'none';
       cameraPlaceholder.style.display = 'block';
     }
-    
-    // Function to show camera feed
     function showCameraFeed() {
       view.style.display = 'block';
       snapBtn.style.display = 'block';
       cameraPlaceholder.style.display = 'none';
     }
-    
-    // Function to get camera stream
     async function getCameraStream(facingMode) {
       updateCameraStatus('Requesting access...', false);
-      
-      // Stop any existing stream
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
-      
-      const constraints = {
-        video: {
-          facingMode: facingMode,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        },
-        audio: false
-      };
-      
+      if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+      const constraints = { video: { facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false };
       try {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         currentStream = stream;
         view.srcObject = stream;
         currentFacingMode = facingMode;
-        
-        // Set up listener for when the stream becomes active
         const videoTrack = stream.getVideoTracks()[0];
-        videoTrack.onstart = () => {
-          showCameraFeed();
-          updateCameraStatus('Active', true);
-        };
-        
-        // Handle when camera is disconnected
-        videoTrack.onended = () => {
-          updateCameraStatus('Disconnected', false);
-          showCameraPlaceholder();
-        };
-        
+        videoTrack.onstart = () => { showCameraFeed(); updateCameraStatus('Active', true); };
+        videoTrack.onended = () => { updateCameraStatus('Disconnected', false); showCameraPlaceholder(); };
         return true;
-      } catch (error) {
-        console.error('Error accessing camera:', error);
+      } catch (err) {
+        console.error(err);
         updateCameraStatus('Access denied', false);
         showCameraPlaceholder();
-        
-        // Provide specific error messages
-        let errorMessage = 'To use this app, please allow camera access in your browser.';
-        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-          errorMessage = 'Camera permission denied. Please allow camera access in your browser settings.';
-        } else if (error.name === 'NotFoundError' || error.name === 'OverconstrainedError') {
-          errorMessage = 'No camera found that matches the requested constraints.';
-        } else if (error.name === 'NotReadableError') {
-          errorMessage = 'Camera is already in use by another application.';
-        }
-        
-        document.querySelector('.camera-placeholder p').textContent = errorMessage;
+        document.querySelector('.camera-placeholder p').textContent = err.name === 'NotAllowedError' ? 'Camera permission denied. Please allow camera access in your browser settings.' : err.message;
         return false;
       }
     }
-    
-    // Initialize camera
     getCameraStream(currentFacingMode);
-    
-    // Switch camera button handler
-    switchCameraBtn.addEventListener('click', () => {
-      const newFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
-      getCameraStream(newFacingMode);
-    });
-    
-    // Toggle flash button handler
-    toggleFlashBtn.addEventListener('click', () => {
-      flashOn = !flashOn;
-      toggleFlashBtn.innerHTML = `<i class="fas fa-bolt"></i> Flash: ${flashOn ? 'On' : 'Off'}`;
-    });
-    
-    // Retry camera access
-    retryCameraBtn.addEventListener('click', () => {
-      getCameraStream(currentFacingMode);
-    });
-    
+    switchCameraBtn.addEventListener('click', () => getCameraStream(currentFacingMode === 'environment' ? 'user' : 'environment'));
+    toggleFlashBtn.addEventListener('click', () => { flashOn = !flashOn; toggleFlashBtn.innerHTML = `<i class="fas fa-bolt"></i> Flash: ${flashOn ? 'On' : 'Off'}`; });
+    retryCameraBtn.addEventListener('click', () => getCameraStream(currentFacingMode));
+
     /* ---------- Geolocation ---------- */
     let pos = { lat: null, lng: null };
     const gpsIcon = document.getElementById('gpsIcon');
     const gpsStatus = document.getElementById('gpsStatus');
-    
-    // Update GPS status display
     function updateGPSStatus() {
       if (pos.lat) {
         gpsIcon.className = 'fas fa-map-marker-alt gps-active';
@@ -697,108 +311,49 @@
         gpsStatus.textContent = 'Location: Not available';
       }
     }
-    
-    // Get current position
     navigator.geolocation.getCurrentPosition(
-      p => {
-        pos = p.coords;
-        updateGPSStatus();
-      },
-      error => {
-        console.error('Geolocation error:', error);
-        updateGPSStatus();
-      },
+      p => { pos = p.coords; updateGPSStatus(); },
+      e => { console.error(e); updateGPSStatus(); },
       { enableHighAccuracy: true, timeout: 10000 }
     );
-    
-    // Watch position for updates
     navigator.geolocation.watchPosition(
-      p => {
-        pos = p.coords;
-        updateGPSStatus();
-      },
-      error => {
-        console.error('Geolocation error:', error);
-        updateGPSStatus();
-      },
+      p => { pos = p.coords; updateGPSStatus(); },
+      e => { console.error(e); updateGPSStatus(); },
       { enableHighAccuracy: true }
     );
-    
-    /* ---------- Capture Photo ---------- */
+
+    /* ---------- Photo + Save + Export ---------- */
     let stampedBlob = null;
-    
     snapBtn.onclick = () => {
       const canvas = document.createElement('canvas');
       canvas.width = view.videoWidth;
       canvas.height = view.videoHeight + 60;
       const ctx = canvas.getContext('2d');
-      
-      // Draw the video frame
       ctx.drawImage(view, 0, 0, canvas.width, canvas.height - 60);
-      
-      // Add timestamp and location overlay
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillStyle = 'rgba(0,0,0,.7)';
       ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
       ctx.fillStyle = '#4cc9f0';
       ctx.font = '16px monospace';
-      
       const date = new Date();
-      const dateStr = date.toLocaleDateString();
-      const timeStr = date.toLocaleTimeString();
-      const stamp = `${dateStr} ${timeStr}`;
-      
-      ctx.fillText(stamp, 20, canvas.height - 35);
-      
-      if (pos.lat) {
-        ctx.fillText(`Lat: ${pos.lat.toFixed(5)}, Lng: ${pos.lng.toFixed(5)}`, 20, canvas.height - 10);
-      }
-      
-      // Convert to Blob
-      canvas.toBlob(blob => {
-        stampedBlob = blob;
-        formArea.style.display = 'block';
-        snapBtn.style.display = 'none';
-      }, 'image/jpeg', 0.92);
+      ctx.fillText(`${date.toLocaleDateString()} ${date.toLocaleTimeString()}`, 20, canvas.height - 35);
+      if (pos.lat) ctx.fillText(`Lat: ${pos.lat.toFixed(5)}, Lng: ${pos.lng.toFixed(5)}`, 20, canvas.height - 10);
+      canvas.toBlob(blob => { stampedBlob = blob; formArea.style.display = 'block'; snapBtn.style.display = 'none'; }, 'image/jpeg', 0.92);
     };
-    
-    /* ---------- Save Asset ---------- */
+
     document.getElementById('save').onclick = async () => {
-      if (!stampedBlob) {
-        document.getElementById('msg').textContent = 'No photo captured!';
-        return;
-      }
-      
+      if (!stampedBlob) { document.getElementById('msg').textContent = 'No photo captured!'; return; }
       const num = document.getElementById('num').value.trim();
       const desc = document.getElementById('desc').value.trim();
       const notes = document.getElementById('notes').value.trim();
-      
-      if (!num || !desc) {
-        document.getElementById('msg').textContent = 'Asset number and description are required!';
-        return;
-      }
-      
-      const rec = {
-        num: num,
-        desc: desc,
-        notes: notes,
-        img: stampedBlob,
-        lat: pos.lat,
-        lng: pos.lng,
-        ts: new Date().toISOString()
-      };
-      
+      if (!num || !desc) { document.getElementById('msg').textContent = 'Asset number and description are required!'; return; }
+      const rec = { num, desc, notes, img: stampedBlob, lat: pos.lat, lng: pos.lng, ts: new Date().toISOString() };
       try {
         const tx = db.transaction([storeName], 'readwrite');
         const store = tx.objectStore(storeName);
-        
-        const request = store.add(rec);
-        
-        request.onsuccess = () => {
-          const id = request.result;
-          document.getElementById('msg').textContent = `Asset #${id} saved successfully!`;
+        const req = store.add(rec);
+        req.onsuccess = () => {
+          document.getElementById('msg').textContent = `Asset #${req.result} saved!`;
           updateRecordCount();
-          
-          // Reset form and return to camera view after a delay
           setTimeout(() => {
             formArea.style.display = 'none';
             snapBtn.style.display = 'block';
@@ -808,111 +363,52 @@
             document.getElementById('msg').textContent = '';
           }, 1500);
         };
-        
-        request.onerror = (e) => {
-          console.error('Error saving record:', e.target.error);
-          document.getElementById('msg').textContent = 'Error saving asset!';
-        };
-      } catch (error) {
-        console.error('Database transaction error:', error);
-        document.getElementById('msg').textContent = 'Database error!';
-      }
+        req.onerror = () => document.getElementById('msg').textContent = 'Error saving asset!';
+      } catch (err) { console.error(err); document.getElementById('msg').textContent = 'Database error!'; }
     };
-    
-    /* ---------- CSV Export ---------- */
+
     document.getElementById('exportCSV').onclick = async () => {
-      if (!db) {
-        alert('Database not available');
-        return;
-      }
-      
+      if (!db) { alert('Database not available'); return; }
       const tx = db.transaction([storeName], 'readonly');
       const store = tx.objectStore(storeName);
       const all = await store.getAll();
-      
-      if (all.result.length === 0) {
-        alert('No assets found to export');
-        return;
-      }
-      
+      if (!all.result.length) { alert('No assets to export'); return; }
       let csv = 'ID,Asset Number,Description,Notes,Latitude,Longitude,Timestamp\n';
-      
-      all.result.forEach((r) => {
-        csv += `${r.id},"${r.num}","${r.desc}","${r.notes.replace(/"/g, '""')}",${r.lat ?? ''},${r.lng ?? ''},"${r.ts}"\n`;
-      });
-      
+      all.result.forEach(r => csv += `${r.id},"${r.num}","${r.desc}","${r.notes.replace(/"/g,'""')}",${r.lat ?? ''},${r.lng ?? ''},"${r.ts}"\n`);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `asset-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `asset-export-${new Date().toISOString().slice(0,10)}.csv`;
       document.body.appendChild(a);
       a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
     };
-    
-    /* ---------- Image Export ---------- */
+
     document.getElementById('exportImages').onclick = async () => {
-      if (!db) {
-        alert('Database not available');
-        return;
-      }
-      
+      if (!db) { alert('Database not available'); return; }
       const tx = db.transaction([storeName], 'readonly');
       const store = tx.objectStore(storeName);
       const all = await store.getAll();
-      
-      if (all.result.length === 0) {
-        alert('No images found to export');
-        return;
-      }
-      
-      // Show progress overlay
-      const progressOverlay = document.getElementById('progressOverlay');
-      const progressCounter = document.getElementById('progressCounter');
-      progressOverlay.style.display = 'flex';
-      
-      let exportedCount = 0;
+      if (!all.result.length) { alert('No images to export'); return; }
+      const overlay = document.getElementById('progressOverlay');
+      const counter = document.getElementById('progressCounter');
+      overlay.style.display = 'flex';
+      let exported = 0;
       const total = all.result.length;
-      
-      // Function to process next image
-      function processNext(index) {
-        if (index >= total) {
-          // All images processed, hide overlay
-          setTimeout(() => {
-            progressOverlay.style.display = 'none';
-            alert(`Successfully exported ${exportedCount} images!`);
-          }, 500);
-          return;
-        }
-        
-        const rec = all.result[index];
-        progressCounter.textContent = `${index + 1}/${total}`;
-        
-        // Create download link for image
+      function process(i) {
+        if (i >= total) { overlay.style.display = 'none'; alert(`Exported ${exported} images`); return; }
+        counter.textContent = `${i + 1}/${total}`;
+        const rec = all.result[i];
         const url = URL.createObjectURL(rec.img);
         const a = document.createElement('a');
         a.href = url;
         a.download = `asset-${rec.id}-${rec.num || 'unknown'}.jpg`;
         document.body.appendChild(a);
         a.click();
-        
-        // Clean up
-        setTimeout(() => {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          exportedCount++;
-          
-          // Process next image after a short delay
-          setTimeout(() => processNext(index + 1), 100);
-        }, 100);
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); exported++; setTimeout(() => process(i + 1), 100); }, 100);
       }
-      
-      // Start processing
-      processNext(0);
+      process(0);
     };
   </script>
 </body>
