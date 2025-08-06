@@ -79,17 +79,14 @@
   <div class="app-header">
     <h1 class="app-title"><i class="fas fa-camera"></i> Asset Capture PWA</h1>
   </div>
-
   <div class="app-container">
     <div id="cameraContainer">
       <video id="view" autoplay playsinline></video>
       <button id="snap"><i class="fas fa-camera"></i></button>
-
       <div class="export-buttons">
         <button id="exportCSV" class="btn btn-success"><i class="fas fa-file-csv"></i> CSV</button>
         <button id="exportImages" class="btn btn-warning"><i class="fas fa-file-image"></i> Images</button>
       </div>
-
       <div id="cameraPlaceholder" class="camera-placeholder" style="display:none">
         <i class="fas fa-video-slash"></i>
         <h3>Camera Access Required</h3>
@@ -106,12 +103,10 @@
         <button id="retryCamera" class="btn btn-error"><i class="fas fa-redo"></i> Retry Camera Access</button>
       </div>
     </div>
-
     <div class="controls">
       <button id="switchCamera" class="btn btn-primary"><i class="fas fa-sync-alt"></i> Switch Camera</button>
       <button id="toggleFlash" class="btn btn-primary"><i class="fas fa-bolt"></i> Flash: Off</button>
     </div>
-
     <div class="status-bar">
       <div class="camera-status">
         <i id="cameraIcon" class="fas fa-video camera-inactive"></i>
@@ -126,7 +121,6 @@
         <span>AssetDB: <span id="recordCount">0</span> records</span>
       </div>
     </div>
-
     <div id="formArea">
       <h3 class="form-title">Asset Details</h3>
       <div class="form-group">
@@ -144,7 +138,6 @@
       <button id="save" class="btn btn-success"><i class="fas fa-save"></i> Save & Reset</button>
       <div id="msg"></div>
     </div>
-
     <div class="instructions">
       <h3><i class="fas fa-info-circle"></i> How to Use</h3>
       <ul>
@@ -156,13 +149,11 @@
       </ul>
     </div>
   </div>
-
   <div class="progress-overlay" id="progressOverlay">
     <div class="spinner"></div>
     <div class="progress-text" id="progressText">Exporting Images…</div>
     <div class="counter" id="progressCounter">0/0</div>
   </div>
-
   <script>
     /* ---------- IndexedDB ---------- */
     const dbName = 'AssetDB', storeName = 'assets';
@@ -180,7 +171,6 @@
       req.onerror = e => console.error(e);
     };
     openDB();
-
     function updateRecordCount() {
       if (!db) return;
       const tx = db.transaction([storeName], 'readonly');
@@ -188,7 +178,6 @@
       const req = store.count();
       req.onsuccess = () => document.getElementById('recordCount').textContent = req.result;
     }
-
     /* ---------- Camera ---------- */
     const view = document.getElementById('view');
     const snapBtn = document.getElementById('snap');
@@ -199,7 +188,6 @@
     const camIcon = document.getElementById('cameraIcon');
     const camStatus = document.getElementById('cameraStatus');
     let stream = null, facing = 'environment', flashOn = false;
-
     function updateCamState(text, active) {
       camStatus.textContent = `Camera: ${text}`;
       camIcon.className = active ? 'fas fa-video camera-active' : 'fas fa-video-slash camera-inactive';
@@ -221,7 +209,6 @@
     switchBtn.addEventListener('click', () => initCam(facing === 'environment' ? 'user' : 'environment'));
     flashBtn.addEventListener('click', () => { flashOn = !flashOn; flashBtn.innerHTML = `<i class="fas fa-bolt"></i> Flash: ${flashOn ? 'On' : 'Off'}`; });
     retryBtn.addEventListener('click', () => initCam(facing));
-
     /* ---------- Geolocation ---------- */
     let pos = { lat: null, lng: null };
     navigator.geolocation.watchPosition(
@@ -229,24 +216,42 @@
       e => console.error(e),
       { enableHighAccuracy: true }
     );
-
     /* ---------- Capture ---------- */
     let stampedBlob = null;
     snapBtn.onclick = () => {
       const canvas = document.createElement('canvas');
       canvas.width = view.videoWidth;
-      canvas.height = view.videoHeight + 60;
+      canvas.height = view.videoHeight + 100;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(view, 0, 0, canvas.width, canvas.height - 60);
+      ctx.drawImage(view, 0, 0, canvas.width, canvas.height - 100);
+      
+      // Create overlay for metadata
       ctx.fillStyle = 'rgba(0,0,0,.7)';
-      ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+      ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+      
+      // Set text styles
       ctx.fillStyle = '#4cc9f0';
       ctx.font = '16px monospace';
-      ctx.fillText(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, canvas.height - 35);
-      if (pos.lat) ctx.fillText(`Lat: ${pos.lat.toFixed(5)}, Lng: ${pos.lng.toFixed(5)}`, 20, canvas.height - 10);
-      canvas.toBlob(blob => { stampedBlob = blob; formArea.style.display = 'block'; snapBtn.style.display = 'none'; }, 'image/jpeg', 0.92);
+      
+      // Add timestamp
+      ctx.fillText(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, canvas.height - 70);
+      
+      // Add location if available
+      if (pos.lat) {
+        ctx.fillText(`Lat: ${pos.lat.toFixed(5)}, Lng: ${pos.lng.toFixed(5)}`, 20, canvas.height - 50);
+      }
+      
+      // Add asset number and description (will be updated when form is saved)
+      ctx.fillText('Asset #: [Temporary]', 20, canvas.height - 30);
+      ctx.fillText('Desc: [Temporary]', 20, canvas.height - 10);
+      
+      canvas.toBlob(blob => { 
+        stampedBlob = blob; 
+        formArea.style.display = 'block'; 
+        snapBtn.style.display = 'none'; 
+      }, 'image/jpeg', 0.92);
     };
-
+    
     /* ---------- Save ---------- */
     document.getElementById('save').onclick = () => {
       if (!stampedBlob) { document.getElementById('msg').textContent = 'No photo captured!'; return; }
@@ -254,22 +259,59 @@
       const desc = document.getElementById('desc').value.trim();
       const notes = document.getElementById('notes').value.trim();
       if (!num || !desc) { document.getElementById('msg').textContent = 'Asset number and description required!'; return; }
-      const tx = db.transaction([storeName], 'readwrite');
-      const store = tx.objectStore(storeName);
-      const req = store.add({ num, desc, notes, img: stampedBlob, lat: pos.lat, lng: pos.lng, ts: new Date().toISOString() });
-      req.onsuccess = () => {
-        document.getElementById('msg').textContent = `Asset #${req.result} saved!`;
-        updateRecordCount();
-        setTimeout(() => {
-          formArea.style.display = 'none';
-          snapBtn.style.display = 'block';
-          ['num', 'desc', 'notes'].forEach(id => document.getElementById(id).value = '');
-          document.getElementById('msg').textContent = '';
-        }, 1500);
-      };
-      req.onerror = () => document.getElementById('msg').textContent = 'Error saving asset!';
+      
+// Recreate the image with the actual asset number and description
+const img = new Image();
+img.onload = function() {
+  const canvas = document.createElement('canvas');
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  // Redraw the metadata bar
+  ctx.fillStyle = 'rgba(0,0,0,.7)';
+  ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+  ctx.fillStyle = '#4cc9f0';
+  ctx.font = '16px monospace';
+  // Add timestamp
+  ctx.fillText(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, canvas.height - 70);
+  // Add location if available
+  if (pos.lat) {
+    ctx.fillText(`Lat: ${pos.lat.toFixed(5)}, Lng: ${pos.lng.toFixed(5)}`, 20, canvas.height - 50);
+  }
+  // Add the actual asset number and description
+  ctx.fillText(`Asset #: ${num}`, 20, canvas.height - 30);
+  ctx.fillText(`Desc: ${desc}`, 20, canvas.height - 10);
+  // Convert to blob and save
+  canvas.toBlob(blob => {
+    const tx = db.transaction([storeName], 'readwrite');
+    const store = tx.objectStore(storeName);
+    const req = store.add({ 
+      num, 
+      desc, 
+      notes, 
+      img: blob, 
+      lat: pos.lat, 
+      lng: pos.lng, 
+      ts: new Date().toISOString() 
+    });
+    req.onsuccess = () => {
+      document.getElementById('msg').textContent = `Asset #${req.result} saved!`;
+      updateRecordCount();
+      setTimeout(() => {
+        formArea.style.display = 'none';
+        snapBtn.style.display = 'block';
+        ['num', 'desc', 'notes'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('msg').textContent = '';
+      }, 1500);
     };
-
+    req.onerror = () => document.getElementById('msg').textContent = 'Error saving asset!';
+  }, 'image/jpeg', 0.92);
+};
+// Create a URL for the temporarily stamped blob
+img.src = URL.createObjectURL(stampedBlob);
+    };
+    
     /* ---------- Export ---------- */
     document.getElementById('exportCSV').onclick = () => {
       if (!db) { alert('Database not available'); return; }
@@ -291,7 +333,7 @@
         setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
       };
     };
-
+    
     document.getElementById('exportImages').onclick = () => {
       if (!db) { alert('Database not available'); return; }
       const tx = db.transaction([storeName], 'readonly');
